@@ -12,9 +12,9 @@ def main():
 	pool_size=10#input("enter the pool size\n")
 	gene_length=5#input("enter the gene length\n")
 	initialize_gene_pool(pool_size, gene_length)
-	roulette_wheel_selection(pool_size, gene_length)
-	for member in pool_gene:
-		pp.pprint(pool_gene[member]["probability"])
+	parents_number=roulette_wheel_selection(pool_size, gene_length)
+	pp.pprint(parents_number)
+
 
 def initialize_gene_pool(pool_size=2, gene_length=2):
 	for member in range(0,pool_size):
@@ -33,13 +33,19 @@ def roulette_wheel_selection(pool_size, gene_length):
 	parents_gene={}
 	parents_number=pool_size
 	current_fitness_total=sum_of_dict_elements(pool_gene, "fitness")
+	i=0
+	parent=0
 	while i<parents_number:
 		cutoff=random.randint(0,current_fitness_total)
+		j=0
+		member=0
 		while j<cutoff:
-			member=0
-			cutoff=cutoff+pool_gene[member]["fitness"]
+			j=j+pool_gene[member]["fitness"]
 			member=member+1
-			j=j+1
+		parents_gene[parent]=member
+		parent=parent+1
+		i=i+1
+	return parents_gene
 
 def sum_of_dict_elements(dictionary, element):
 	current_total=0
