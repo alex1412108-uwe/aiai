@@ -12,8 +12,9 @@ def main():
 	pool_size=10#input("enter the pool size\n")
 	gene_length=5#input("enter the gene length\n")
 	initialize_gene_pool(pool_size, gene_length)
-	parents_number=roulette_wheel_selection(pool_size, gene_length)
-	pp.pprint(parents_number)
+	parents_gene=roulette_wheel_selection(pool_size, gene_length)
+	pp.pprint(parents_gene)
+
 
 
 def initialize_gene_pool(pool_size=2, gene_length=2):
@@ -46,6 +47,8 @@ def roulette_wheel_selection(pool_size, gene_length):
 		parent=parent+1
 		i=i+1
 	return parents_gene
+
+def single_point_crossover
 
 def sum_of_dict_elements(dictionary, element):
 	current_total=0
