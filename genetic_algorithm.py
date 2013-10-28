@@ -41,11 +41,11 @@ def roulette_wheel_selection(pool_size, gene_length):
 	parent=0
 	while i<parents_number:
 		cutoff=random.randint(0,current_fitness_total)
-		j=0 #resets the roullette wheel counter
+		j=0 #resets the fitness counter
 		member=-1 #since member gets incremented by one before the while loop can exit
 		while j<cutoff:
 			member=member+1
-			j=j+pool_gene[member]["fitness"]
+			j=j+pool_gene[member]["fitness"] #increases the fitness counter by the current members fitness
 		parents_gene[parent]=member
 		parent=parent+1
 		i=i+1
