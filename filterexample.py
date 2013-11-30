@@ -18,3 +18,6 @@ print(squares)
 
 whole_squares = [square(number) for number in integers if greater_than_zero(number)]
 print(whole_squares)
+
+
+[func(k,v) for k, v in k, v ...]
