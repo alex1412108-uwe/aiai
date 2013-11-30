@@ -17,7 +17,7 @@ def main():
 	print()
 	parents_gene=roulette_wheel_selection(pool_size, gene_length, parents_number)
 	pp.pprint(parents_gene)
-	single_point_crossover(pool_size, gene_length, parents_gene, parents_number)
+	#single_point_crossover(pool_size, gene_length, parents_gene, parents_number)
 
 
 
@@ -46,7 +46,7 @@ def roulette_wheel_selection(pool_size, gene_length, parents_number):
 				parents_gene[parent]=member
 				break
 	return parents_gene
-
+'''
 def single_point_crossover(pool_size, gene_length, parents_gene, parents_number):
 	global pp
 	global pool_gene
@@ -59,7 +59,7 @@ def single_point_crossover(pool_size, gene_length, parents_gene, parents_number)
 		for member, value in parents_gene:
 
 		for member +1, value in 
-
+'''
 
 def sum_of_dict_elements(dictionary, element):
 	current_total=0
