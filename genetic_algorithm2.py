@@ -1,14 +1,13 @@
 import random
 import pprint
 random.seed
-pp=pprint.PrettyPrinter(indent=4)
-
 pool_gene={}
 
 
 def main():
 	global pp
 	global pool_gene
+	pp=pprint.PrettyPrinter(indent=4)
 	pool_size=10#input("enter the pool size\n")
 	gene_length=5#input("enter the gene length\n")
 	parents_number=pool_size
@@ -19,7 +18,8 @@ def main():
 	pp.pprint(parents_gene)
 	children_gene=single_point_crossover(pool_size, gene_length, parents_gene, parents_number)
 	pp.pprint(children_gene)
-
+	mutated_gene=mutation(pool_size, gene_length, parents_gene)
+	pp.pprint(mutated_gene)
 
 
 def initialize_gene_pool(pool_size=2, gene_length=2):
@@ -34,7 +34,6 @@ def initialize_gene_pool(pool_size=2, gene_length=2):
 		pool_gene[member]=value_member
 
 def roulette_wheel_selection(pool_size, gene_length, parents_number):
-	global pp
 	global pool_gene
 	parents_gene={}
 	current_fitness_total=sum_of_dict_elements(pool_gene, "fitness")
@@ -51,7 +50,6 @@ def roulette_wheel_selection(pool_size, gene_length, parents_number):
 
 
 def single_point_crossover(pool_size, gene_length, parents_gene, parents_number):
-	global pp
 	global pool_gene
 	children_gene={}
 
@@ -67,6 +65,10 @@ def single_point_crossover(pool_size, gene_length, parents_gene, parents_number)
 		children_gene[member]={"gene":gene1_child}
 		children_gene[member+1]={"gene":gene2_child}
 	return children_gene
+
+def mutation(pool_size, gene_length, parents_gene):
+	global pool_gene
+	
 
 def sum_of_dict_elements(dictionary, element):
 	current_total=0
