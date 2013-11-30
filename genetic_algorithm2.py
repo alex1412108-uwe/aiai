@@ -1,8 +1,8 @@
 import random
 import pprint
+
 random.seed
 pool_gene={}
-
 
 def main():
     global pp
@@ -33,6 +33,7 @@ def initialize_gene_pool(pool_size=2, gene_length=2):
         value_member["gene"]=value_gene
         pool_gene[member]=value_member
 
+
 def roulette_wheel_selection(pool_size, gene_length, parents_number):
     global pool_gene
     parents_gene={}
@@ -47,7 +48,6 @@ def roulette_wheel_selection(pool_size, gene_length, parents_number):
                 parents_gene[parent]=member
                 break
     return parents_gene
-
 
 def single_point_crossover(pool_size, gene_length, parents_gene, parents_number):
     global pool_gene
@@ -66,12 +66,12 @@ def single_point_crossover(pool_size, gene_length, parents_gene, parents_number)
         children_gene[member+1]={"gene":gene2_child}
     return children_gene
 
+
 def mutation(pool_size, gene_length, parents_gene):
     global pool_gene
     for member in range(0,pool_size):
         for gene in range (0,gene_length):
             pass
-
 
 def sum_of_dict_elements(dictionary, element):
     current_total=0
@@ -79,4 +79,6 @@ def sum_of_dict_elements(dictionary, element):
         current_total=current_total+dictionary[member][element]
     return current_total
 
-main()
+
+if __name__ == "__main__":
+    main()
