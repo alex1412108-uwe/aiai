@@ -7,20 +7,37 @@ def main():
     global pp
     pp = pprint.PrettyPrinter(indent = 4)
     pool_size = 10#input("enter the pool size\n") #must be even
-    gene_length = 5#input("enter the gene length\n")
+    gene_length = 10#input("enter the gene length\n")
     parents_number = pool_size #must be even
     mutation_rate=100
+
     pool_gene=initialize_gene_pool(pool_size, gene_length)
     #pp.pprint(pool_gene)
-    parents_gene = roulette_wheel_selection(pool_gene, pool_size, gene_length, parents_number)
-    #pp.pprint(parents_gene)
-    children_gene = single_point_crossover(parents_gene, pool_size, gene_length, parents_number)
-    pp.pprint(children_gene)
-    print()
-    mutated_gene = mutation(children_gene, pool_size, gene_length, mutation_rate)
-    pp.pprint(mutated_gene)
-    print()
+    current_fitness_total = sum_of_fitness(pool_gene)
+    pp.pprint(current_fitness_total)
 
+    optimal_found=False
+    for i in range(0,50):
+        parents_gene = roulette_wheel_selection(pool_gene, pool_size, gene_length, parents_number)
+        #pp.pprint(parents_gene)
+        children_gene = single_point_crossover(parents_gene, pool_size, gene_length, parents_number)
+        #pp.pprint(children_gene)
+        mutated_gene = mutation(children_gene, pool_size, gene_length, mutation_rate)
+        #pp.pprint(mutated_gene)
+        pool_gene = mutated_gene
+        #pp.pprint(pool_gene)
+        pool_gene = fitness_of_members(pool_gene, pool_size, gene_length)
+        #pp.pprint(pool_gene)
+        current_fitness_total = sum_of_fitness(pool_gene)
+        pp.pprint(current_fitness_total)
+
+        if current_fitness_total==gene_length*pool_size:
+            print()
+            print(i)
+            optimal_found=True
+            break
+    if optimal_found == False:
+        print('no optimal found')
 
 def initialize_gene_pool(pool_size = 2, gene_length = 2):
     pool_gene = {}
@@ -79,6 +96,12 @@ def mutation(children_gene, pool_size, gene_length, mutation_rate):
                 mutated_gene_list[gene]=children_gene[member]["gene"][gene] #leaves gene the same
         mutated_gene[member]={"gene":mutated_gene_list}
     return mutated_gene
+
+def fitness_of_members(pool_gene, pool_size, gene_length):
+    for member in range(0,pool_size):
+        pool_gene[member]["fitness"] = sum(pool_gene[member]["gene"])
+    return pool_gene
+
 
 def sum_of_fitness(pool_gene):
     current_total=0
