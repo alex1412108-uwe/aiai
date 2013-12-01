@@ -9,14 +9,17 @@ def main():
     pool_size = 10#input("enter the pool size\n") #must be even
     gene_length = 5#input("enter the gene length\n")
     parents_number = pool_size #must be even
+    mutation_rate=100
     pool_gene=initialize_gene_pool(pool_size, gene_length)
-    pp.pprint(pool_gene)
+    #pp.pprint(pool_gene)
     parents_gene = roulette_wheel_selection(pool_gene, pool_size, gene_length, parents_number)
-    pp.pprint(parents_gene)
+    #pp.pprint(parents_gene)
     children_gene = single_point_crossover(parents_gene, pool_size, gene_length, parents_number)
     pp.pprint(children_gene)
-    mutated_gene = mutation(children_gene, pool_size, gene_length)
+    print()
+    mutated_gene = mutation(children_gene, pool_size, gene_length, mutation_rate)
     pp.pprint(mutated_gene)
+    print()
 
 
 def initialize_gene_pool(pool_size = 2, gene_length = 2):
@@ -64,13 +67,18 @@ def single_point_crossover(parents_gene, pool_size, gene_length, parents_number)
     return children_gene
 
 
-def mutation(children_gene, pool_size, gene_length):
+def mutation(children_gene, pool_size, gene_length, mutation_rate):
     mutated_gene = {}
+
     for member in range(0,pool_size):
+        mutated_gene_list=list(range(gene_length))
         for gene in range (0,gene_length):
-            if random.randint(1,1) == 1:
-                children_gene[member]["gene"][gene] = children_gene[member]["gene"][gene] ^ 1 #inverts the gene
-    return children_gene
+            if random.randint(0,mutation_rate) == 0:
+                mutated_gene_list[gene]=children_gene[member]["gene"][gene] ^ 1 #inverts the gene
+            else:
+                mutated_gene_list[gene]=children_gene[member]["gene"][gene] #leaves gene the same
+        mutated_gene[member]={"gene":mutated_gene_list}
+    return mutated_gene
 
 def sum_of_fitness(pool_gene):
     current_total=0
