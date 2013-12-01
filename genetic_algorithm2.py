@@ -24,6 +24,7 @@ def main():
     current_fitness_total = sum_of_fitness(pool_gene)
     pp.pprint(current_fitness_total)
 
+    highest_fitness_total=0
     optimal_found=False
     for i in range(0,100):
         parents_gene = roulette_wheel_selection(pool_gene, pool_size, gene_length, parents_number)
@@ -39,8 +40,8 @@ def main():
         current_fitness_total = sum_of_fitness(pool_gene)
         pp.pprint(current_fitness_total)
 
-        if current_fitness_total < highest_fitness_total:
-
+        highest_fitness_total = current_fitness_total if current_fitness_total > highest_fitness_total else highest_fitness_total
+        
         if current_fitness_total == gene_length * pool_size:
             print("")
             print("generations taken="+str(i))
@@ -48,6 +49,7 @@ def main():
             break
     if optimal_found == False:
         print('no optimal found')
+    print("highest fitness total=" + str(highest_fitness_total))
     print("fitness goal=" + str(gene_length*pool_size))
 
 def initialize_gene_pool(pool_size = 2, gene_length = 2):
