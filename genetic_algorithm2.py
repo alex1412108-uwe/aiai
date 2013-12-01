@@ -1,3 +1,11 @@
+#getting matplotlib working from: http://stackoverflow.com/questions/18280436/importerror-matplotlib-requires-dateutil
+#numpy (numpy-MKL-1.8.0.win-amd64-py3.3.exe) from: http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy 
+#matplotlib (matplotlib-1.3.1.win-amd64-py3.3.exe) from: http://matplotlib.org/downloads.html
+#dateutil (python-dateutil-2.2.win-amd64-py3.3.exe) from: http://www.lfd.uci.edu/~gohlke/pythonlibs/#python-dateutil
+#pytz (pytz-2013.8.win-amd64-py3.3.exe) from: http://www.lfd.uci.edu/~gohlke/pythonlibs/#pytz
+#pyparsing (pyparsing-2.0.1.win-amd64-py3.3.exe) from: http://www.lfd.uci.edu/~gohlke/pythonlibs/#pyparsing
+#six (six-1.4.1.win-amd64-py3.3.exe) from: http://www.lfd.uci.edu/~gohlke/pythonlibs/#six
+
 import random
 import pprint
 
@@ -6,10 +14,10 @@ random.seed
 def main():
     global pp
     pp = pprint.PrettyPrinter(indent = 4)
-    pool_size = 10#input("enter the pool size\n") #must be even
-    gene_length = 10#input("enter the gene length\n")
+    pool_size = 50#input("enter the pool size\n") #must be even
+    gene_length = 50#input("enter the gene length\n")
     parents_number = pool_size #must be even
-    mutation_rate=100
+    mutation_rate = .001 #0=no mutation, 1=50% mutation
 
     pool_gene=initialize_gene_pool(pool_size, gene_length)
     #pp.pprint(pool_gene)
@@ -17,7 +25,7 @@ def main():
     pp.pprint(current_fitness_total)
 
     optimal_found=False
-    for i in range(0,50):
+    for i in range(0,100):
         parents_gene = roulette_wheel_selection(pool_gene, pool_size, gene_length, parents_number)
         #pp.pprint(parents_gene)
         children_gene = single_point_crossover(parents_gene, pool_size, gene_length, parents_number)
@@ -31,13 +39,16 @@ def main():
         current_fitness_total = sum_of_fitness(pool_gene)
         pp.pprint(current_fitness_total)
 
-        if current_fitness_total==gene_length*pool_size:
-            print()
-            print(i)
+        if current_fitness_total < highest_fitness_total:
+
+        if current_fitness_total == gene_length * pool_size:
+            print("")
+            print("generations taken="+str(i))
             optimal_found=True
             break
     if optimal_found == False:
         print('no optimal found')
+    print("fitness goal=" + str(gene_length*pool_size))
 
 def initialize_gene_pool(pool_size = 2, gene_length = 2):
     pool_gene = {}
@@ -88,13 +99,13 @@ def mutation(children_gene, pool_size, gene_length, mutation_rate):
     mutated_gene = {}
 
     for member in range(0,pool_size):
-        mutated_gene_list=list(range(gene_length))
+        mutated_gene_list = list(range(gene_length))
         for gene in range (0,gene_length):
-            if random.randint(0,mutation_rate) == 0:
-                mutated_gene_list[gene]=children_gene[member]["gene"][gene] ^ 1 #inverts the gene
+            if random.random() < mutation_rate: #random.random returns a float between 0 and 1
+                mutated_gene_list[gene] = children_gene[member]["gene"][gene] ^ 1 #inverts the gene
             else:
-                mutated_gene_list[gene]=children_gene[member]["gene"][gene] #leaves gene the same
-        mutated_gene[member]={"gene":mutated_gene_list}
+                mutated_gene_list[gene] = children_gene[member]["gene"][gene] #leaves gene the same
+        mutated_gene[member] = {"gene":mutated_gene_list}
     return mutated_gene
 
 def fitness_of_members(pool_gene, pool_size, gene_length):
@@ -104,9 +115,9 @@ def fitness_of_members(pool_gene, pool_size, gene_length):
 
 
 def sum_of_fitness(pool_gene):
-    current_total=0
+    current_total = 0
     for member, value in pool_gene.items():
-        current_total=current_total+pool_gene[member]["fitness"]
+        current_total = current_total + pool_gene[member]["fitness"]
     return current_total
 
 
