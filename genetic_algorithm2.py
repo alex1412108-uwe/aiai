@@ -32,8 +32,9 @@ def main():
     gene_length = 50#input("enter the gene length\n")
     parents_number = pool_size #must be even
     mutation_rate = .001 #percentage as a decimal
+    crossover_rate = .8
 
-    pool_gene=initialize_gene_pool(pool_size, gene_length)
+    pool_gene = initialize_gene_pool(pool_size, gene_length)
     #pp.pprint(pool_gene)
     current_fitness_total = sum_of_fitness(pool_gene)
     print(current_fitness_total)
@@ -43,16 +44,17 @@ def main():
     optimal_found=False
     for i in range(0,50):
 
-        current_fitness_member = 
-        highest_fitness_member = current_fitness_member if current_fitness_member > highest_fitness_member else highest_fitness_member
+        for member_of_pool in range(0,pool_size):
+            current_fitness_member=sum(pool_gene[member_of_pool]["gene"])
+            highest_fitness_member = current_fitness_member if current_fitness_member > highest_fitness_member else highest_fitness_member
 
         axtotal.scatter(i,current_fitness_total, s=40, c='b', marker='s', faceted=False)
         axmean.scatter(i,current_fitness_total/pool_size, s=40, c='b', marker='s', faceted=False)
-        axbest.scatter(i,5, s=40, c='b', marker='s', faceted=False)
+        axbest.scatter(i,highest_fitness_member, s=40, c='b', marker='s', faceted=False)
 
         parents_gene = roulette_wheel_selection(pool_gene, pool_size, gene_length, parents_number)
         #pp.pprint(parents_gene)
-        children_gene = single_point_crossover(parents_gene, pool_size, gene_length, parents_number)
+        children_gene = single_point_crossover(parents_gene, pool_size, gene_length, parents_number, crossover_rate)
         #pp.pprint(children_gene)
         mutated_gene = mutation(children_gene, pool_size, gene_length, mutation_rate)
         #pp.pprint(mutated_gene)
@@ -123,20 +125,24 @@ def roulette_wheel_selection(pool_gene, pool_size, gene_length, parents_number):
                 break
     return parents_gene
 
-def single_point_crossover(parents_gene, pool_size, gene_length, parents_number):
+def single_point_crossover(parents_gene, pool_size, gene_length, parents_number, crossover_rate):
     children_gene = {}
 
     for member in range(0, parents_number,2):
-        gene1 = parents_gene[member]["gene"]
-        gene2 = parents_gene[member + 1]["gene"]
+        if random.random() < crossover_rate: #random.random returns a float between 0 and 1
+            gene1 = parents_gene[member]["gene"]
+            gene2 = parents_gene[member + 1]["gene"]
 
-        crossover_point = random.randint(1,gene_length-1)
+            crossover_point = random.randint(1,gene_length-1)
 
-        gene1_child = gene1[:crossover_point] + gene2[crossover_point:]
-        gene2_child = gene2[:crossover_point] + gene1[crossover_point:]
+            gene1_child = gene1[:crossover_point] + gene2[crossover_point:]
+            gene2_child = gene2[:crossover_point] + gene1[crossover_point:]
 
-        children_gene[member] = {"gene":gene1_child}
-        children_gene[member + 1] = {"gene":gene2_child}
+            children_gene[member] = {"gene":gene1_child}
+            children_gene[member + 1] = {"gene":gene2_child}
+        else:
+            children_gene[member] = {"gene":parents_gene[member]["gene"]}
+            children_gene[member + 1] = {"gene":parents_gene[member+1]["gene"]}
 
     return children_gene
 
