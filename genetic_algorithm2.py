@@ -8,6 +8,8 @@
 #pyparsing (pyparsing-2.0.1.win-amd64-py3.3.exe) from: http://www.lfd.uci.edu/~gohlke/pythonlibs/#pyparsing             #
 #six (six-1.4.1.win-amd64-py3.3.exe) from: http://www.lfd.uci.edu/~gohlke/pythonlibs/#six                               #
 ########################################################################################################################3
+#how to use scipy: http://www.loria.fr/~rougier/teaching/matplotlib/#id5
+
 import random
 import pprint
 import scipy
@@ -18,21 +20,36 @@ random.seed
 def main():
     global pp
     pp = pprint.PrettyPrinter(indent = 4)
-    ax = plt.subplot(111)
+    axtotal = plt.subplot2grid((8,1),(0,0), rowspan=2)
+    axtotal.set_title("total")
+    axmean = plt.subplot2grid((8,1),(3,0), rowspan=2)
+    axmean.set_title("mean")
+    axbest = plt.subplot2grid((8,1),(6,0), rowspan=2)
+    axbest.set_title("best")
+
 
     pool_size = 50#input("enter the pool size\n") #must be even
     gene_length = 50#input("enter the gene length\n")
     parents_number = pool_size #must be even
-    mutation_rate = .01 #percentage as a decimal
+    mutation_rate = .001 #percentage as a decimal
 
     pool_gene=initialize_gene_pool(pool_size, gene_length)
     #pp.pprint(pool_gene)
     current_fitness_total = sum_of_fitness(pool_gene)
-    pp.pprint(current_fitness_total)
+    print(current_fitness_total)
 
     highest_fitness_total=0
+    highest_fitness_member=0
     optimal_found=False
-    for i in range(0,100):
+    for i in range(0,50):
+
+        current_fitness_member = 
+        highest_fitness_member = current_fitness_member if current_fitness_member > highest_fitness_member else highest_fitness_member
+
+        axtotal.scatter(i,current_fitness_total, s=40, c='b', marker='s', faceted=False)
+        axmean.scatter(i,current_fitness_total/pool_size, s=40, c='b', marker='s', faceted=False)
+        axbest.scatter(i,5, s=40, c='b', marker='s', faceted=False)
+
         parents_gene = roulette_wheel_selection(pool_gene, pool_size, gene_length, parents_number)
         #pp.pprint(parents_gene)
         children_gene = single_point_crossover(parents_gene, pool_size, gene_length, parents_number)
@@ -44,11 +61,13 @@ def main():
         pool_gene = fitness_of_members(pool_gene, pool_size, gene_length)
         #pp.pprint(pool_gene)
         current_fitness_total = sum_of_fitness(pool_gene)
-        pp.pprint(current_fitness_total)
+        print(current_fitness_total)
 
         highest_fitness_total = current_fitness_total if current_fitness_total > highest_fitness_total else highest_fitness_total
         
-        ax.scatter(i,current_fitness_total, s=40, c='b', marker='s', faceted=False)
+
+
+
         if current_fitness_total == gene_length * pool_size:
             print("")
             print("generations taken="+str(i))
@@ -60,11 +79,22 @@ def main():
     print("fitness goal=" + str(gene_length*pool_size))
     #settings
     plt.grid(True)
-    #label graph
-    plt.xlabel(r"generation", fontsize = 12)
-    plt.ylabel(r"fitness", fontsize = 12)
+    #label graphs
+    axtotal.set_xlabel(r"generation", fontsize = 12)
+    axtotal.set_ylabel(r"fitness", fontsize = 12)
+    axmean.set_xlabel(r"generation", fontsize = 12)
+    axmean.set_ylabel(r"fitness", fontsize = 12)
+    axbest.set_xlabel(r"generation", fontsize = 12)
+    axbest.set_ylabel(r"fitness", fontsize = 12)
+    #set graph limits
+    axtotal.set_xlim(0,50)
+    axtotal.set_ylim(0,gene_length*pool_size)
+    axmean.set_xlim(0,50)
+    axmean.set_ylim(0,gene_length)
+    axbest.set_xlim(0,50)
+    axbest.set_ylim(0,gene_length)
     # Produce output
-    plt.savefig('plot.png', dpi=96)
+    plt.savefig('graphs.png', dpi=96)
 
 def initialize_gene_pool(pool_size = 2, gene_length = 2):
     pool_gene = {}
@@ -113,7 +143,6 @@ def single_point_crossover(parents_gene, pool_size, gene_length, parents_number)
 
 def mutation(children_gene, pool_size, gene_length, mutation_rate):
     mutated_gene = {}
-
     for member in range(0,pool_size):
         mutated_gene_list = list(range(gene_length))
         for gene in range (0,gene_length):
