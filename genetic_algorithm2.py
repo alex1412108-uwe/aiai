@@ -1,23 +1,29 @@
-#getting matplotlib working from: http://stackoverflow.com/questions/18280436/importerror-matplotlib-requires-dateutil
-#numpy (numpy-MKL-1.8.0.win-amd64-py3.3.exe) from: http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy 
-#matplotlib (matplotlib-1.3.1.win-amd64-py3.3.exe) from: http://matplotlib.org/downloads.html
-#dateutil (python-dateutil-2.2.win-amd64-py3.3.exe) from: http://www.lfd.uci.edu/~gohlke/pythonlibs/#python-dateutil
-#pytz (pytz-2013.8.win-amd64-py3.3.exe) from: http://www.lfd.uci.edu/~gohlke/pythonlibs/#pytz
-#pyparsing (pyparsing-2.0.1.win-amd64-py3.3.exe) from: http://www.lfd.uci.edu/~gohlke/pythonlibs/#pyparsing
-#six (six-1.4.1.win-amd64-py3.3.exe) from: http://www.lfd.uci.edu/~gohlke/pythonlibs/#six
 
+#####windows setup to get graphing working, currently doesnt work########################################################
+#getting matplotlib working from: http://stackoverflow.com/questions/18280436/importerror-matplotlib-requires-dateutil  #
+#numpy (numpy-MKL-1.8.0.win-amd64-py3.3.exe) from: http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy                     #
+#matplotlib (matplotlib-1.3.1.win-amd64-py3.3.exe) from: http://matplotlib.org/downloads.html                           #
+#dateutil (python-dateutil-2.2.win-amd64-py3.3.exe) from: http://www.lfd.uci.edu/~gohlke/pythonlibs/#python-dateutil    #
+#pytz (pytz-2013.8.win-amd64-py3.3.exe) from: http://www.lfd.uci.edu/~gohlke/pythonlibs/#pytz                           #
+#pyparsing (pyparsing-2.0.1.win-amd64-py3.3.exe) from: http://www.lfd.uci.edu/~gohlke/pythonlibs/#pyparsing             #
+#six (six-1.4.1.win-amd64-py3.3.exe) from: http://www.lfd.uci.edu/~gohlke/pythonlibs/#six                               #
+########################################################################################################################3
 import random
 import pprint
+import scipy
+import matplotlib.pyplot as plt
 
 random.seed
 
 def main():
     global pp
     pp = pprint.PrettyPrinter(indent = 4)
+    ax = plt.subplot(111)
+
     pool_size = 50#input("enter the pool size\n") #must be even
     gene_length = 50#input("enter the gene length\n")
     parents_number = pool_size #must be even
-    mutation_rate = .001 #0=no mutation, 1=50% mutation
+    mutation_rate = .01 #percentage as a decimal
 
     pool_gene=initialize_gene_pool(pool_size, gene_length)
     #pp.pprint(pool_gene)
@@ -42,6 +48,7 @@ def main():
 
         highest_fitness_total = current_fitness_total if current_fitness_total > highest_fitness_total else highest_fitness_total
         
+        ax.scatter(i,current_fitness_total, s=40, c='b', marker='s', faceted=False)
         if current_fitness_total == gene_length * pool_size:
             print("")
             print("generations taken="+str(i))
@@ -51,6 +58,13 @@ def main():
         print('no optimal found')
     print("highest fitness total=" + str(highest_fitness_total))
     print("fitness goal=" + str(gene_length*pool_size))
+    #settings
+    plt.grid(True)
+    #label graph
+    plt.xlabel(r"generation", fontsize = 12)
+    plt.ylabel(r"fitness", fontsize = 12)
+    # Produce output
+    plt.savefig('plot.png', dpi=96)
 
 def initialize_gene_pool(pool_size = 2, gene_length = 2):
     pool_gene = {}
