@@ -20,6 +20,7 @@ random.seed
 def main():
     global pp
     pp = pprint.PrettyPrinter(indent = 4)
+    #make into one graph with different colors, divide total by 100 to bring it closer to the other results and mention it in the legend
     axtotal = plt.subplot2grid((8,1),(0,0), rowspan=2)
     axtotal.set_title("total")
     axmean = plt.subplot2grid((8,1),(3,0), rowspan=2)
@@ -31,6 +32,7 @@ def main():
     pool_size = 50#input("enter the pool size\n") #must be even
     gene_length = 50#input("enter the gene length\n")
     parents_number = pool_size #must be even
+    generations = 200
     mutation_rate = .001 #percentage as a decimal
     crossover_rate = .8
 
@@ -40,10 +42,10 @@ def main():
     print(current_fitness_total)
 
     highest_fitness_total=0
-    highest_fitness_member=0
-    optimal_found=False
-    for i in range(0,50):
 
+    optimal_found=False
+    for i in range(0,generations):
+        highest_fitness_member=0
         for member_of_pool in range(0,pool_size):
             current_fitness_member=sum(pool_gene[member_of_pool]["gene"])
             highest_fitness_member = current_fitness_member if current_fitness_member > highest_fitness_member else highest_fitness_member
@@ -89,14 +91,14 @@ def main():
     axbest.set_xlabel(r"generation", fontsize = 12)
     axbest.set_ylabel(r"fitness", fontsize = 12)
     #set graph limits
-    axtotal.set_xlim(0,50)
+    axtotal.set_xlim(0,generations)
     axtotal.set_ylim(0,gene_length*pool_size)
-    axmean.set_xlim(0,50)
+    axmean.set_xlim(0,generations)
     axmean.set_ylim(0,gene_length)
-    axbest.set_xlim(0,50)
+    axbest.set_xlim(0,generations)
     axbest.set_ylim(0,gene_length)
     # Produce output
-    plt.savefig('graphs.png', dpi=96)
+    plt.savefig('graphs.png', dpi=150)
 
 def initialize_gene_pool(pool_size = 2, gene_length = 2):
     pool_gene = {}
