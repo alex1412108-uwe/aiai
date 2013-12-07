@@ -10,6 +10,8 @@
 ########################################################################################################################3
 #how to use scipy: http://www.loria.fr/~rougier/teaching/matplotlib/#id5
 
+#genetic algorithm by alex thompson
+
 import random
 import pprint
 import scipy
@@ -33,8 +35,8 @@ def main():
     gene_length = 50#input("enter the gene length\n")
     parents_number = pool_size #must be even
     generations = 200
-    mutation_rate = .001 #percentage as a decimal
-    crossover_rate = .8
+    mutation_rate = .02 #percentage as a decimal
+    crossover_rate = .9
 
     pool_gene = initialize_gene_pool(pool_size, gene_length)
     #pp.pprint(pool_gene)
@@ -45,18 +47,22 @@ def main():
 
     optimal_found=False
     for i in range(0,generations):
-        highest_fitness_member=0
+        highest_fitness_member_value=0
         for member_of_pool in range(0,pool_size):
             current_fitness_member=sum(pool_gene[member_of_pool]["gene"])
-            highest_fitness_member = current_fitness_member if current_fitness_member > highest_fitness_member else highest_fitness_member
-
+            if current_fitness_member > highest_fitness_member_value:
+                highest_fitness_member_value = current_fitness_member
+                highest_fitness_member = member_of_pool
+        print(highest_fitness_member)
         axtotal.scatter(i,current_fitness_total, s=40, c='b', marker='s', faceted=False)
         axmean.scatter(i,current_fitness_total/pool_size, s=40, c='b', marker='s', faceted=False)
-        axbest.scatter(i,highest_fitness_member, s=40, c='b', marker='s', faceted=False)
+        axbest.scatter(i,highest_fitness_member_value, s=40, c='b', marker='s', faceted=False)
 
-        parents_gene = roulette_wheel_selection(pool_gene, pool_size, gene_length, parents_number)
+        parents_gene = roulette_wheel_selection(pool_gene, pool_size, gene_length, parents_number, highest_fitness_member)
         #pp.pprint(parents_gene)
-        children_gene = single_point_crossover(parents_gene, pool_size, gene_length, parents_number, crossover_rate)
+        shuffled_gene = shuffle(parents_gene, pool_size, gene_length)
+        #pp.pprint(shuffled_gene)
+        children_gene = single_point_crossover(shuffled_gene, pool_size, gene_length, parents_number, crossover_rate)
         #pp.pprint(children_gene)
         mutated_gene = mutation(children_gene, pool_size, gene_length, mutation_rate)
         #pp.pprint(mutated_gene)
@@ -114,18 +120,32 @@ def initialize_gene_pool(pool_size = 2, gene_length = 2):
     return pool_gene
 
 
-def roulette_wheel_selection(pool_gene, pool_size, gene_length, parents_number):
+def roulette_wheel_selection(pool_gene, pool_size, gene_length, parents_number, highest_fitness_member):
     parents_gene = {}
     current_fitness_total = sum_of_fitness(pool_gene)
     for parent in range(0,parents_number):
         cutoff = random.randint(0,current_fitness_total)
         fitness_sum = 0 #resets the fitness counter
         for member in range(0,pool_size):
-            fitness_sum = fitness_sum + pool_gene[member]["fitness"] #increases the fitness counter by the current members fitness
-            if fitness_sum >= cutoff: 
-                parents_gene[parent] = pool_gene[member]
-                break
+            if member == highest_fitness_member: #checks if the member is the highest fitness member
+                parents_gene[parent] = dict(pool_gene[member])
+                print("yes")
+            else:
+                fitness_sum = fitness_sum + pool_gene[member]["fitness"] #increases the fitness counter by the current members fitness
+                if fitness_sum >= cutoff: 
+                    parents_gene[parent] = pool_gene[member]
+                    print("no")
+                    break
     return parents_gene
+
+def shuffle(parents_gene, pool_size, gene_length):
+    shuffle_gene={}
+    parents_gene_number=len(parents_gene)
+    random_list=range(0,parents_gene_number)
+    random.shuffle(random_list)
+    for member in range(0, parents_gene_number):
+        shuffle_gene[member]=dict(parents_gene[random_list[member]])
+    return shuffle_gene
 
 def single_point_crossover(parents_gene, pool_size, gene_length, parents_number, crossover_rate):
     children_gene = {}
