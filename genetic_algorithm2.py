@@ -28,8 +28,8 @@ def main():
     axgraph = plt.subplot(111)
 
     #configurable settings
-    pool_size = 10#input("enter the pool size\n") #must be even
-    gene_length = 10#input("enter the gene length\n")
+    pool_size = 50#input("enter the pool size\n") #must be even
+    gene_length = 50#input("enter the gene length\n")
     parents_number = pool_size #must be even
     generations = 50
     mutation_rate = .02 #percentage as a decimal
@@ -49,22 +49,22 @@ def main():
     axgraph.scatter(0,current_fitness_total*.01, s=40, c='y', marker='s', faceted=False)
     axgraph.scatter(0,current_fitness_total/pool_size, s=40, c='g', marker='s', faceted=False)
     axgraph.scatter(0,highest_fitness_member[0]["fitness"], s=40, c='b', marker='s', faceted=False)
-
+    
     optimal_found = False
     for i in range(0,generations):
 
         #pp.pprint(pool_gene)
-        parents_gene = roulette_wheel_selection(pool_gene, pool_size, gene_length, parents_number, highest_fitness_member)
+        parents_gene = roulette_wheel_selection(pool_gene, parents_number, highest_fitness_member)
         #pp.pprint(parents_gene)
-        shuffled_gene = shuffle(parents_gene, pool_size, gene_length)
+        shuffled_gene = shuffle(parents_gene)
         #pp.pprint(shuffled_gene)
-        children_gene = single_point_crossover(shuffled_gene, pool_size, gene_length, crossover_rate)
+        children_gene = single_point_crossover(shuffled_gene, crossover_rate)
         #pp.pprint(children_gene)
-        mutated_gene = mutation(children_gene, pool_size, gene_length, mutation_rate)
+        mutated_gene = mutation(children_gene, mutation_rate)
         #pp.pprint(mutated_gene)
         pool_gene = mutated_gene
         #pp.pprint(pool_gene)
-        pool_gene = fitness_of_members(pool_gene, pool_size, gene_length)
+        pool_gene = fitness_of_members(pool_gene)
         #pp.pprint(pool_gene)
         current_fitness_total = sum_of_fitness(pool_gene)
         print(current_fitness_total)
@@ -81,13 +81,16 @@ def main():
 
         if highest_fitness_member[0]["fitness"] == gene_length:
             print("")
-            print("generations taken="+str(i))
+            print("generations taken="+str(i+1))
             optimal_found=True
             break
     if optimal_found == False:
         print('no optimal found')
     print("highest fitness member=" + str(highest_fitness_member[0]["fitness"]))
     print("fitness goal=" + str(gene_length))
+
+    #graphing
+
     #settings
     plt.grid(True)
     #label graphs
@@ -114,19 +117,24 @@ def initialize_gene_pool(pool_size = 2, gene_length = 2):
         pool_gene[member] = value_member
     return pool_gene
 
+def graph_points(x,y)
+    axgraph.scatter(i+1,current_fitness_total*.01, s=40, c='y', marker='s', faceted=False)
+    axgraph.scatter(i+1,current_fitness_total/pool_size, s=40, c='g', marker='s', faceted=False)
+    axgraph.scatter(i+1,highest_fitness_member[0]["fitness"], s=40, c='b', marker='s', faceted=False)
+
 def find_highest_fitness(pool_gene, highest_fitness_member):
     highest_fitness_member_current = {}
     for member in range(0,len(pool_gene)):
         if pool_gene[member]["fitness"] > highest_fitness_member[0]["fitness"]:
             highest_fitness_member_current = dict(pool_gene[member])
-            #highest_fitness_member_current[0]["fitness"] = pool_gene[member]["fitness"]
-            #highest_fitness_member_current[0]["gene"]=list(pool_gene[member]["gene"])
     if not any(highest_fitness_member_current):
         highest_fitness_member_current = dict(highest_fitness_member[0])
     return highest_fitness_member_current 
 
-def roulette_wheel_selection(pool_gene, pool_size, gene_length, parents_number, highest_fitness_member):
+def roulette_wheel_selection(pool_gene, parents_number, highest_fitness_member):
     parents_gene = {}
+    pool_size=len(pool_gene)
+
     current_fitness_total = sum_of_fitness(pool_gene)
     for parent in range(0,parents_number-1):
         cutoff = random.randint(0,current_fitness_total)
@@ -139,7 +147,9 @@ def roulette_wheel_selection(pool_gene, pool_size, gene_length, parents_number, 
     parents_gene[parents_number-1] = dict(highest_fitness_member[0])
     return parents_gene
 
-def shuffle(parents_gene, pool_size, gene_length):
+#def tournament_selection():
+
+def shuffle(parents_gene):
     shuffle_gene = {}
     parents_gene_number = len(parents_gene)
     random_list = range(0,parents_gene_number)
@@ -148,8 +158,9 @@ def shuffle(parents_gene, pool_size, gene_length):
         shuffle_gene[member] = dict(parents_gene[random_list[member]])
     return shuffle_gene
 
-def single_point_crossover(shuffled_gene, pool_size, gene_length, crossover_rate):
+def single_point_crossover(shuffled_gene, crossover_rate):
     children_gene = {}
+    gene_length=len(shuffled_gene[0]["gene"])
 
     for member in range(0, len(shuffled_gene),2):
         if random.random() < crossover_rate: #random.random returns a float between 0 and 1
@@ -170,8 +181,10 @@ def single_point_crossover(shuffled_gene, pool_size, gene_length, crossover_rate
     return children_gene
 
 
-def mutation(children_gene, pool_size, gene_length, mutation_rate):
+def mutation(children_gene, mutation_rate):
     mutated_gene = {}
+    pool_size=len(children_gene)
+    gene_length=len(children_gene[0]["gene"])
     for member in range(0,pool_size):
         mutated_gene_list = list(range(gene_length))
         for gene in range (0,gene_length):
@@ -182,7 +195,8 @@ def mutation(children_gene, pool_size, gene_length, mutation_rate):
         mutated_gene[member] = {"gene":mutated_gene_list}
     return mutated_gene
 
-def fitness_of_members(pool_gene, pool_size, gene_length):
+def fitness_of_members(pool_gene):
+    pool_size=len(pool_gene)
     for member in range(0,pool_size):
         pool_gene[member]["fitness"] = sum(pool_gene[member]["gene"])
     return pool_gene
