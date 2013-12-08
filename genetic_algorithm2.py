@@ -7,7 +7,8 @@
 #pytz (pytz-2013.8.win-amd64-py3.3.exe) from: http://www.lfd.uci.edu/~gohlke/pythonlibs/#pytz                           #
 #pyparsing (pyparsing-2.0.1.win-amd64-py3.3.exe) from: http://www.lfd.uci.edu/~gohlke/pythonlibs/#pyparsing             #
 #six (six-1.4.1.win-amd64-py3.3.exe) from: http://www.lfd.uci.edu/~gohlke/pythonlibs/#six                               #
-########################################################################################################################3
+#########################################################################################################################
+
 #how to use scipy: http://www.loria.fr/~rougier/teaching/matplotlib/#id5
 
 #genetic algorithm by alex thompson
@@ -38,14 +39,11 @@ def main():
     pool_gene = initialize_gene_pool(pool_size, gene_length)
     #pp.pprint(pool_gene)
     current_fitness_total = sum_of_fitness(pool_gene)
-    print("current fitness total=",current_fitness_total)
 
     highest_fitness_total = 0
     highest_fitness_member={}
     highest_fitness_member[0] = {"fitness":0}
-
     highest_fitness_member[0] = dict(find_highest_fitness(pool_gene, highest_fitness_member))
-    print(highest_fitness_member)
 
     graph_points(0,current_fitness_total*.01,'y',axgraph)
     graph_points(0,current_fitness_total/pool_size,'g',axgraph)
@@ -68,12 +66,10 @@ def main():
         pool_gene = fitness_of_members(pool_gene)
         #pp.pprint(pool_gene)
         current_fitness_total = sum_of_fitness(pool_gene)
-        print(current_fitness_total)
 
         highest_fitness_total = current_fitness_total if current_fitness_total > highest_fitness_total else highest_fitness_total
         
         highest_fitness_member[0] = dict(find_highest_fitness(pool_gene, highest_fitness_member))
-        print(highest_fitness_member)
 
         graph_points(i+1,current_fitness_total*.01,'y',axgraph)
         graph_points(i+1,current_fitness_total/pool_size,'g',axgraph)
@@ -203,6 +199,7 @@ def find_highest_fitness(pool_gene, highest_fitness_member):
     for member in range(0,len(pool_gene)):
         if pool_gene[member]["fitness"] > highest_fitness_member[0]["fitness"]:
             highest_fitness_member_current = dict(pool_gene[member])
+            highest_fitness_member[0]["fitness"] = pool_gene[member]["fitness"]
     if not any(highest_fitness_member_current):
         highest_fitness_member_current = dict(highest_fitness_member[0])
     return highest_fitness_member_current
