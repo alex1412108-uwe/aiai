@@ -33,8 +33,9 @@ def main():
     axbest.set_title("best")'''
     axgraph = plt.subplot(111)
 
-    pool_size = 10#input("enter the pool size\n") #must be even
-    gene_length = 10#input("enter the gene length\n")
+    #configurable settings
+    pool_size = 50#input("enter the pool size\n") #must be even
+    gene_length = 50#input("enter the gene length\n")
     parents_number = pool_size #must be even
     generations = 50
     mutation_rate = .02 #percentage as a decimal
@@ -43,27 +44,24 @@ def main():
     pool_gene = initialize_gene_pool(pool_size, gene_length)
     #pp.pprint(pool_gene)
     current_fitness_total = sum_of_fitness(pool_gene)
-    print(current_fitness_total)
+    print("current fitness total=",current_fitness_total)
 
-    highest_fitness_total=0
-    highest_fitness_member=0
-    highest_fitness_member_value=0
-    optimal_found=False
+    highest_fitness_total = 0
+    highest_fitness_member={}
+    highest_fitness_member[0] = {"fitness":0}
+    print(highest_fitness_member)
+    optimal_found = False
     for i in range(0,generations):
-        for member_of_pool in range(0,pool_size):
-            current_fitness_member=sum(pool_gene[member_of_pool]["gene"])
-            if current_fitness_member > highest_fitness_member_value:
-                highest_fitness_member_value = current_fitness_member
-                highest_fitness_member = member_of_pool
-                print(highest_fitness_member)
+
+        highest_fitness_member[0] = dict(find_highest_fitness(pool_gene, highest_fitness_member))
+        print(highest_fitness_member)
 
         axgraph.scatter(i,current_fitness_total*.01, s=40, c='y', marker='s', faceted=False)
         axgraph.scatter(i,current_fitness_total/pool_size, s=40, c='g', marker='s', faceted=False)
-        axgraph.scatter(i,highest_fitness_member_value, s=40, c='b', marker='s', faceted=False)
+        axgraph.scatter(i,highest_fitness_member[0]["fitness"], s=40, c='b', marker='s', faceted=False)
         #pp.pprint(pool_gene)
         parents_gene = roulette_wheel_selection(pool_gene, pool_size, gene_length, parents_number, highest_fitness_member)
-        pp.pprint(parents_gene)
-        print("__________")
+        #pp.pprint(parents_gene)
         shuffled_gene = shuffle(parents_gene, pool_size, gene_length)
         #pp.pprint(shuffled_gene)
         children_gene = single_point_crossover(shuffled_gene, pool_size, gene_length, crossover_rate)
@@ -129,6 +127,16 @@ def initialize_gene_pool(pool_size = 2, gene_length = 2):
         pool_gene[member] = value_member
     return pool_gene
 
+def find_highest_fitness(pool_gene, highest_fitness_member):
+    highest_fitness_member_current = {}
+    for member in range(0,len(pool_gene)):
+        if pool_gene[member]["fitness"] > highest_fitness_member[0]["fitness"]:
+            highest_fitness_member_current = dict(pool_gene[member])
+            #highest_fitness_member_current[0]["fitness"] = pool_gene[member]["fitness"]
+            #highest_fitness_member_current[0]["gene"]=list(pool_gene[member]["gene"])
+    if not any(highest_fitness_member_current):
+        highest_fitness_member_current = dict(highest_fitness_member[0])
+    return highest_fitness_member_current 
 
 def roulette_wheel_selection(pool_gene, pool_size, gene_length, parents_number, highest_fitness_member):
     parents_gene = {}
@@ -137,15 +145,11 @@ def roulette_wheel_selection(pool_gene, pool_size, gene_length, parents_number, 
         cutoff = random.randint(0,current_fitness_total)
         fitness_sum = 0 #resets the fitness counter
         for member in range(0,pool_size):
-            '''if member == highest_fitness_member: #checks if the member is the highest fitness member
-                parents_gene[parent] = dict(pool_gene[member])
-                print("yes")
-            else:'''
             fitness_sum = fitness_sum + pool_gene[member]["fitness"] #increases the fitness counter by the current members fitness
             if fitness_sum >= cutoff: 
                 parents_gene[parent] = pool_gene[member]
                 break
-    parents_gene[parents_number-1] = dict(pool_gene[highest_fitness_member])
+    parents_gene[parents_number-1] = dict(highest_fitness_member[0])
     return parents_gene
 
 def shuffle(parents_gene, pool_size, gene_length):
