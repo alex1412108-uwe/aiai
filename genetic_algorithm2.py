@@ -25,17 +25,11 @@ def main():
     global pp
     pp = pprint.PrettyPrinter(indent = 4)
     #make into one graph with different colors, divide total by 100 to bring it closer to the other results and mention it in the legend
-    '''axtotal = plt.subplot2grid((8,1),(0,0), rowspan=2)
-    axtotal.set_title("total")
-    axmean = plt.subplot2grid((8,1),(3,0), rowspan=2)
-    axmean.set_title("mean")
-    axbest = plt.subplot2grid((8,1),(6,0), rowspan=2)
-    axbest.set_title("best")'''
     axgraph = plt.subplot(111)
 
     #configurable settings
-    pool_size = 50#input("enter the pool size\n") #must be even
-    gene_length = 50#input("enter the gene length\n")
+    pool_size = 10#input("enter the pool size\n") #must be even
+    gene_length = 10#input("enter the gene length\n")
     parents_number = pool_size #must be even
     generations = 50
     mutation_rate = .02 #percentage as a decimal
@@ -49,16 +43,16 @@ def main():
     highest_fitness_total = 0
     highest_fitness_member={}
     highest_fitness_member[0] = {"fitness":0}
+
+    highest_fitness_member[0] = dict(find_highest_fitness(pool_gene, highest_fitness_member))
     print(highest_fitness_member)
+    axgraph.scatter(0,current_fitness_total*.01, s=40, c='y', marker='s', faceted=False)
+    axgraph.scatter(0,current_fitness_total/pool_size, s=40, c='g', marker='s', faceted=False)
+    axgraph.scatter(0,highest_fitness_member[0]["fitness"], s=40, c='b', marker='s', faceted=False)
+
     optimal_found = False
     for i in range(0,generations):
 
-        highest_fitness_member[0] = dict(find_highest_fitness(pool_gene, highest_fitness_member))
-        print(highest_fitness_member)
-
-        axgraph.scatter(i,current_fitness_total*.01, s=40, c='y', marker='s', faceted=False)
-        axgraph.scatter(i,current_fitness_total/pool_size, s=40, c='g', marker='s', faceted=False)
-        axgraph.scatter(i,highest_fitness_member[0]["fitness"], s=40, c='b', marker='s', faceted=False)
         #pp.pprint(pool_gene)
         parents_gene = roulette_wheel_selection(pool_gene, pool_size, gene_length, parents_number, highest_fitness_member)
         #pp.pprint(parents_gene)
@@ -77,37 +71,30 @@ def main():
 
         highest_fitness_total = current_fitness_total if current_fitness_total > highest_fitness_total else highest_fitness_total
         
+        highest_fitness_member[0] = dict(find_highest_fitness(pool_gene, highest_fitness_member))
+        print(highest_fitness_member)
+
+        axgraph.scatter(i+1,current_fitness_total*.01, s=40, c='y', marker='s', faceted=False)
+        axgraph.scatter(i+1,current_fitness_total/pool_size, s=40, c='g', marker='s', faceted=False)
+        axgraph.scatter(i+1,highest_fitness_member[0]["fitness"], s=40, c='b', marker='s', faceted=False)
 
 
-
-        if current_fitness_total == gene_length * pool_size:
+        if highest_fitness_member[0]["fitness"] == gene_length:
             print("")
             print("generations taken="+str(i))
             optimal_found=True
             break
     if optimal_found == False:
         print('no optimal found')
-    print("highest fitness total=" + str(highest_fitness_total))
-    print("fitness goal=" + str(gene_length*pool_size))
+    print("highest fitness member=" + str(highest_fitness_member[0]["fitness"]))
+    print("fitness goal=" + str(gene_length))
     #settings
     plt.grid(True)
     #label graphs
-    '''axtotal.set_xlabel(r"generation", fontsize = 12)
-    axtotal.set_ylabel(r"fitness", fontsize = 12)
-    axmean.set_xlabel(r"generation", fontsize = 12)
-    axmean.set_ylabel(r"fitness", fontsize = 12)
-    axbest.set_xlabel(r"generation", fontsize = 12)
-    axbest.set_ylabel(r"fitness", fontsize = 12)'''
     axgraph.set_xlabel(r"generation", fontsize = 12)
     axgraph.set_ylabel(r"fitness", fontsize = 12)
-    plt.legend(('total fitness*0.01','mean fitness','best member'), loc = 'lower left')
+    plt.legend(('total fitness*0.01','mean fitness','best member'), loc = 'lower right')
     #set graph limits
-    '''axtotal.set_xlim(0,generations)
-    axtotal.set_ylim(0,gene_length*pool_size)
-    axmean.set_xlim(0,generations)
-    axmean.set_ylim(0,gene_length)
-    axbest.set_xlim(0,generations)
-    axbest.set_ylim(0,gene_length)'''
     axgraph.set_xlim(0,generations)
     axgraph.set_ylim(0,gene_length)
     # Produce output
