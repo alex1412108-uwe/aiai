@@ -31,8 +31,8 @@ def main():
     pool_size = 50#input("enter the pool size\n") #must be even
     gene_length = 50#input("enter the gene length\n")
     parents_number = pool_size #must be even
-    generations = 50
-    mutation_rate = .02 #percentage as a decimal
+    generations = 500
+    mutation_rate = .002 #percentage as a decimal
     crossover_rate = .9
 
     pool_gene = initialize_gene_pool(pool_size, gene_length)
@@ -46,9 +46,10 @@ def main():
 
     highest_fitness_member[0] = dict(find_highest_fitness(pool_gene, highest_fitness_member))
     print(highest_fitness_member)
-    axgraph.scatter(0,current_fitness_total*.01, s=40, c='y', marker='s', faceted=False)
-    axgraph.scatter(0,current_fitness_total/pool_size, s=40, c='g', marker='s', faceted=False)
-    axgraph.scatter(0,highest_fitness_member[0]["fitness"], s=40, c='b', marker='s', faceted=False)
+
+    graph_points(0,current_fitness_total*.01,'y',axgraph)
+    graph_points(0,current_fitness_total/pool_size,'g',axgraph)
+    graph_points(0,highest_fitness_member[0]["fitness"],'b',axgraph)
     
     optimal_found = False
     for i in range(0,generations):
@@ -74,9 +75,9 @@ def main():
         highest_fitness_member[0] = dict(find_highest_fitness(pool_gene, highest_fitness_member))
         print(highest_fitness_member)
 
-        axgraph.scatter(i+1,current_fitness_total*.01, s=40, c='y', marker='s', faceted=False)
-        axgraph.scatter(i+1,current_fitness_total/pool_size, s=40, c='g', marker='s', faceted=False)
-        axgraph.scatter(i+1,highest_fitness_member[0]["fitness"], s=40, c='b', marker='s', faceted=False)
+        graph_points(i+1,current_fitness_total*.01,'y',axgraph)
+        graph_points(i+1,current_fitness_total/pool_size,'g',axgraph)
+        graph_points(i+1,highest_fitness_member[0]["fitness"],'b',axgraph)
 
 
         if highest_fitness_member[0]["fitness"] == gene_length:
@@ -116,20 +117,6 @@ def initialize_gene_pool(pool_size = 2, gene_length = 2):
         value_member["fitness"] = value_fitness
         pool_gene[member] = value_member
     return pool_gene
-
-def graph_points(x,y)
-    axgraph.scatter(i+1,current_fitness_total*.01, s=40, c='y', marker='s', faceted=False)
-    axgraph.scatter(i+1,current_fitness_total/pool_size, s=40, c='g', marker='s', faceted=False)
-    axgraph.scatter(i+1,highest_fitness_member[0]["fitness"], s=40, c='b', marker='s', faceted=False)
-
-def find_highest_fitness(pool_gene, highest_fitness_member):
-    highest_fitness_member_current = {}
-    for member in range(0,len(pool_gene)):
-        if pool_gene[member]["fitness"] > highest_fitness_member[0]["fitness"]:
-            highest_fitness_member_current = dict(pool_gene[member])
-    if not any(highest_fitness_member_current):
-        highest_fitness_member_current = dict(highest_fitness_member[0])
-    return highest_fitness_member_current 
 
 def roulette_wheel_selection(pool_gene, parents_number, highest_fitness_member):
     parents_gene = {}
@@ -208,6 +195,17 @@ def sum_of_fitness(pool_gene):
         current_total = current_total + pool_gene[member]["fitness"]
     return current_total
 
+def graph_points(x,y,color,axgraph):
+    axgraph.scatter(x,y, s=40, c=color, marker='s', faceted=False)
+
+def find_highest_fitness(pool_gene, highest_fitness_member):
+    highest_fitness_member_current = {}
+    for member in range(0,len(pool_gene)):
+        if pool_gene[member]["fitness"] > highest_fitness_member[0]["fitness"]:
+            highest_fitness_member_current = dict(pool_gene[member])
+    if not any(highest_fitness_member_current):
+        highest_fitness_member_current = dict(highest_fitness_member[0])
+    return highest_fitness_member_current
 
 if __name__ == "__main__":
     main()
