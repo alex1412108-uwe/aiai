@@ -17,24 +17,26 @@ import pprint
 import scipy
 import matplotlib.pyplot as plt
 
+plt.figure(figsize=(16,6),dpi=100)
+
 random.seed
 
 def main():
     global pp
     pp = pprint.PrettyPrinter(indent = 4)
     #make into one graph with different colors, divide total by 100 to bring it closer to the other results and mention it in the legend
-    axtotal = plt.subplot2grid((8,1),(0,0), rowspan=2)
+    '''axtotal = plt.subplot2grid((8,1),(0,0), rowspan=2)
     axtotal.set_title("total")
     axmean = plt.subplot2grid((8,1),(3,0), rowspan=2)
     axmean.set_title("mean")
     axbest = plt.subplot2grid((8,1),(6,0), rowspan=2)
-    axbest.set_title("best")
-
+    axbest.set_title("best")'''
+    axgraph = plt.subplot(111)
 
     pool_size = 50#input("enter the pool size\n") #must be even
     gene_length = 50#input("enter the gene length\n")
     parents_number = pool_size #must be even
-    generations = 200
+    generations = 50
     mutation_rate = .02 #percentage as a decimal
     crossover_rate = .9
 
@@ -54,15 +56,15 @@ def main():
                 highest_fitness_member_value = current_fitness_member
                 highest_fitness_member = member_of_pool
         print(highest_fitness_member)
-        axtotal.scatter(i,current_fitness_total, s=40, c='b', marker='s', faceted=False)
-        axmean.scatter(i,current_fitness_total/pool_size, s=40, c='b', marker='s', faceted=False)
-        axbest.scatter(i,highest_fitness_member_value, s=40, c='b', marker='s', faceted=False)
+        axgraph.scatter(i,current_fitness_total*.01, s=40, c='y', marker='s', faceted=False)
+        axgraph.scatter(i,current_fitness_total/pool_size, s=40, c='g', marker='s', faceted=False)
+        axgraph.scatter(i,highest_fitness_member_value, s=40, c='b', marker='s', faceted=False)
 
         parents_gene = roulette_wheel_selection(pool_gene, pool_size, gene_length, parents_number, highest_fitness_member)
         #pp.pprint(parents_gene)
         shuffled_gene = shuffle(parents_gene, pool_size, gene_length)
         #pp.pprint(shuffled_gene)
-        children_gene = single_point_crossover(shuffled_gene, pool_size, gene_length, parents_number, crossover_rate)
+        children_gene = single_point_crossover(shuffled_gene, pool_size, gene_length, crossover_rate)
         #pp.pprint(children_gene)
         mutated_gene = mutation(children_gene, pool_size, gene_length, mutation_rate)
         #pp.pprint(mutated_gene)
@@ -90,21 +92,27 @@ def main():
     #settings
     plt.grid(True)
     #label graphs
-    axtotal.set_xlabel(r"generation", fontsize = 12)
+    '''axtotal.set_xlabel(r"generation", fontsize = 12)
     axtotal.set_ylabel(r"fitness", fontsize = 12)
     axmean.set_xlabel(r"generation", fontsize = 12)
     axmean.set_ylabel(r"fitness", fontsize = 12)
     axbest.set_xlabel(r"generation", fontsize = 12)
-    axbest.set_ylabel(r"fitness", fontsize = 12)
+    axbest.set_ylabel(r"fitness", fontsize = 12)'''
+    axgraph.set_xlabel(r"generation", fontsize = 12)
+    axgraph.set_ylabel(r"fitness", fontsize = 12)
+    plt.legend(('total fitness','mean fitness','best member'), loc = 'lower left')
     #set graph limits
-    axtotal.set_xlim(0,generations)
+    '''axtotal.set_xlim(0,generations)
     axtotal.set_ylim(0,gene_length*pool_size)
     axmean.set_xlim(0,generations)
     axmean.set_ylim(0,gene_length)
     axbest.set_xlim(0,generations)
-    axbest.set_ylim(0,gene_length)
+    axbest.set_ylim(0,gene_length)'''
+    axgraph.set_xlim(0,generations)
+    axgraph.set_ylim(0,gene_length)
     # Produce output
     plt.savefig('graphs.png', dpi=150)
+    plt.show()
 
 def initialize_gene_pool(pool_size = 2, gene_length = 2):
     pool_gene = {}
@@ -147,13 +155,13 @@ def shuffle(parents_gene, pool_size, gene_length):
         shuffle_gene[member]=dict(parents_gene[random_list[member]])
     return shuffle_gene
 
-def single_point_crossover(parents_gene, pool_size, gene_length, parents_number, crossover_rate):
+def single_point_crossover(shuffled_gene, pool_size, gene_length, crossover_rate):
     children_gene = {}
 
-    for member in range(0, parents_number,2):
+    for member in range(0, len(shuffled_gene),2):
         if random.random() < crossover_rate: #random.random returns a float between 0 and 1
-            gene1 = parents_gene[member]["gene"]
-            gene2 = parents_gene[member + 1]["gene"]
+            gene1 = shuffled_gene[member]["gene"]
+            gene2 = shuffled_gene[member + 1]["gene"]
 
             crossover_point = random.randint(1,gene_length-1)
 
@@ -163,8 +171,8 @@ def single_point_crossover(parents_gene, pool_size, gene_length, parents_number,
             children_gene[member] = {"gene":gene1_child}
             children_gene[member + 1] = {"gene":gene2_child}
         else:
-            children_gene[member] = {"gene":parents_gene[member]["gene"]}
-            children_gene[member + 1] = {"gene":parents_gene[member+1]["gene"]}
+            children_gene[member] = {"gene":shuffled_gene[member]["gene"]}
+            children_gene[member + 1] = {"gene":shuffled_gene[member+1]["gene"]}
 
     return children_gene
 
