@@ -33,7 +33,7 @@ def main():
     gene_length = 50#input("enter the gene length\n")
     parents_number = pool_size #must be even
     tournament_size = 49
-    generations = 500
+    generations = 50
     mutation_rate = .01 #percentage as a decimal
     crossover_rate = .9
 
@@ -136,12 +136,19 @@ def roulette_wheel_selection(pool_gene, parents_number, highest_fitness_member):
 def tournament_selection(pool_gene, parents_number, tournament_size, highest_fitness_member):
     parents_gene = {}
     tournament=list(range(tournament_size))
+    tournament_winner=0
+    tournament_winner_fitness=0
     pool_size=len(pool_gene)
+
     for parent in range(0,parents_number-1):
         for tournament_member in range(0, tournament_size):
             tournament[tournament_member] = random.randint(0,pool_size-1)
+        for tournament_member in tournament:
+            if pool_gene[tournament_member]["fitness"] > tournament_winner_fitness:
+                tournament_winner_fitness = pool_gene[tournament_member]["fitness"]
+                tournament_winner = tournament_member
 
-        parents_gene[parent] = pool_gene[max(tournament)]
+        parents_gene[parent] = pool_gene[tournament_winner]
 
     parents_gene[parents_number-1] = dict(highest_fitness_member[0])
     return parents_gene
