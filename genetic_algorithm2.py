@@ -32,8 +32,9 @@ def main():
     pool_size = 50#input("enter the pool size\n") #must be even
     gene_length = 50#input("enter the gene length\n")
     parents_number = pool_size #must be even
+    tournament_size = 49
     generations = 500
-    mutation_rate = .002 #percentage as a decimal
+    mutation_rate = .01 #percentage as a decimal
     crossover_rate = .9
 
     pool_gene = initialize_gene_pool(pool_size, gene_length)
@@ -53,7 +54,9 @@ def main():
     for i in range(0,generations):
 
         #pp.pprint(pool_gene)
-        parents_gene = roulette_wheel_selection(pool_gene, parents_number, highest_fitness_member)
+        #parents_gene = roulette_wheel_selection(pool_gene, parents_number, highest_fitness_member)
+        #pp.pprint(parents_gene)
+        parents_gene = tournament_selection(pool_gene, parents_number, tournament_size, highest_fitness_member)
         #pp.pprint(parents_gene)
         shuffled_gene = shuffle(parents_gene)
         #pp.pprint(shuffled_gene)
@@ -130,7 +133,18 @@ def roulette_wheel_selection(pool_gene, parents_number, highest_fitness_member):
     parents_gene[parents_number-1] = dict(highest_fitness_member[0])
     return parents_gene
 
-#def tournament_selection():
+def tournament_selection(pool_gene, parents_number, tournament_size, highest_fitness_member):
+    parents_gene = {}
+    tournament=list(range(tournament_size))
+    pool_size=len(pool_gene)
+    for parent in range(0,parents_number-1):
+        for tournament_member in range(0, tournament_size):
+            tournament[tournament_member] = random.randint(0,pool_size-1)
+
+        parents_gene[parent] = pool_gene[max(tournament)]
+
+    parents_gene[parents_number-1] = dict(highest_fitness_member[0])
+    return parents_gene
 
 def shuffle(parents_gene):
     shuffle_gene = {}
