@@ -18,11 +18,25 @@ import pprint
 import scipy
 import matplotlib.pyplot as plt
 
-plt.figure(figsize=(16,6),dpi=100)
+plt.figure(figsize=(16,6),dpi=115)
 
 random.seed
 
 def main():
+    number_of_generations=100
+    total_generations_taken=0
+    lowest_generations_taken=50
+    for _ in range(0,number_of_generations):
+        generations_taken = genetic_algorithm()
+        total_generations_taken = total_generations_taken + generations_taken
+        if lowest_generations_taken > generations_taken:
+            lowest_generations_taken = generations_taken
+
+    print("average generations taken=" + str(total_generations_taken/number_of_generations))
+    print("lowest generations taken="+ str(lowest_generations_taken))
+    plt.show()
+
+def genetic_algorithm():
     global pp
     pp = pprint.PrettyPrinter(indent = 4)
     #make into one graph with different colors, divide total by 100 to bring it closer to the other results and mention it in the legend
@@ -32,9 +46,9 @@ def main():
     pool_size = 50#input("enter the pool size\n") #must be even
     gene_length = 50#input("enter the gene length\n")
     parents_number = pool_size #must be even
-    tournament_size = 49
+    tournament_size = 15
     generations = 50
-    mutation_rate = .01 #percentage as a decimal
+    mutation_rate = .02 #percentage as a decimal
     crossover_rate = .9
 
     pool_gene = initialize_gene_pool(pool_size, gene_length)
@@ -80,14 +94,14 @@ def main():
 
 
         if highest_fitness_member[0]["fitness"] == gene_length:
-            print("")
+            #print("")
             print("generations taken="+str(i+1))
             optimal_found=True
             break
     if optimal_found == False:
         print('no optimal found')
-    print("highest fitness member=" + str(highest_fitness_member[0]["fitness"]))
-    print("fitness goal=" + str(gene_length))
+    #print("highest fitness member=" + str(highest_fitness_member[0]["fitness"]))
+    #print("fitness goal=" + str(gene_length))
 
     #graphing
 
@@ -98,11 +112,12 @@ def main():
     axgraph.set_ylabel(r"fitness", fontsize = 12)
     plt.legend(('total fitness*0.01','mean fitness','best member'), loc = 'lower right')
     #set graph limits
-    axgraph.set_xlim(0,generations)
-    axgraph.set_ylim(0,gene_length)
+    #axgraph.set_xlim(0,i)
+    axgraph.set_ylim(0,gene_length+1)
     # Produce output
-    plt.savefig('graphs.png', dpi=150)
-    plt.show()
+    #plt.savefig('graphs.png', dpi=150)
+    #plt.show()
+    return i+1
 
 def initialize_gene_pool(pool_size = 2, gene_length = 2):
     pool_gene = {}
@@ -213,7 +228,7 @@ def sum_of_fitness(pool_gene):
     return current_total
 
 def graph_points(x,y,color,axgraph):
-    axgraph.scatter(x,y, s=40, c=color, marker='s', faceted=False)
+    axgraph.scatter(x,y, s=20, c=color, marker='s', edgecolors='none')
 
 def find_highest_fitness(pool_gene, highest_fitness_member):
     highest_fitness_member_current = {}
