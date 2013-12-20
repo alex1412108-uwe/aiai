@@ -23,7 +23,7 @@ plt.figure(figsize=(16,6),dpi=115)
 random.seed
 
 def main():
-    number_of_generations=100
+    number_of_generations=1l
     total_generations_taken=0
     lowest_generations_taken=50
     for _ in range(0,number_of_generations):
