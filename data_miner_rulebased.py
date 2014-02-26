@@ -1,3 +1,7 @@
+#needs to learn from the first half to solve for the second half
+#input(first column) needs to result in the output (second column)
+
+
 import csv
 import random
 
