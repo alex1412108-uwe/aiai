@@ -1,3 +1,5 @@
+#see march 3, 2014 lecture for more details
+
 import csv
 import random
 
