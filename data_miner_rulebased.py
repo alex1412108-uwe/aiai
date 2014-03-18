@@ -20,11 +20,7 @@ def main():
 	random.shuffle(data)
 	dataset1 = data[:16]
 	dataset2 = data[17:]
-	genetic_algorithm(len(data), len(data[0][0]), 50, dataset1)
-	# rule_set = initialize_rule_set()
-	# pp.pprint(rule_set)
-	# rule_set = fitness_test(rule_set, dataset1)
-	# pp.pprint(rule_set)
+	genetic_algorithm(len(data), len(data[0][0]), 500, dataset1)
 
 
 def datareader():
@@ -44,7 +40,7 @@ def initialize_rule_set(rule_set_size=16, rule_length=5):
 			value_rule[rule] = random.choice(["0","1","[01]"])
 		value_fitness = 0
 		value_member["gene"] = value_rule
-		value_member["result"] = random.choice([0,1])
+		value_member["result"] = 1#random.choice([0,1])
 		value_member["fitness"] = value_fitness
 		rule_set[member] = value_member
 	return rule_set
@@ -53,17 +49,22 @@ def fitness_test(rule_set, dataset):
 	global pp
 	pp = pprint.PrettyPrinter(indent = 1)
 	for key, member in rule_set.items():
-		fitness = 0
+		fitness = 1
 		rule_string = ''.join(member["gene"])
 		for data in dataset:
+			# if member["result"] == int(data[1]):
+			# 	fitness += 0
 			if re.match(rule_string, data[0]):
-				fitness += 1
-				if member["result"] == data[1]:
+				if int(data[1]) == 0:
+					fitness -= 1
+				elif int(data[1]) == 1:
 					fitness += 1
+				else:
+					print "error"
 		rule_set[key]["fitness"] = fitness
 	return rule_set
 
-def genetic_algorithm(pool_size=50, gene_length=50, generations=50, dataset1=1):
+def genetic_algorithm(pool_size=0, gene_length=0, generations=0, dataset1=0):
 	global pp
 	pp = pprint.PrettyPrinter(indent = 1)
 	#make into one graph with different colors, divide total by 100 to bring it closer to the other results and mention it in the legend
@@ -79,6 +80,7 @@ def genetic_algorithm(pool_size=50, gene_length=50, generations=50, dataset1=1):
 	pool_gene = initialize_rule_set(pool_size, gene_length)
 	#pp.pprint(pool_gene)
 	pool_gene = fitness_test(pool_gene, dataset1)
+	#pp.pprint(pool_gene)
 	current_fitness_total = sum_of_fitness(pool_gene)
 
 	highest_fitness_total = 0
@@ -129,6 +131,9 @@ def genetic_algorithm(pool_size=50, gene_length=50, generations=50, dataset1=1):
 	#print("highest fitness member=" + str(highest_fitness_member[0]["fitness"]))
 	#print("fitness goal=" + str(gene_length))
 
+	pp.pprint(pool_gene)
+	#print highest_fitness_member
+
 	#graphing
 
 	#settings
@@ -139,10 +144,10 @@ def genetic_algorithm(pool_size=50, gene_length=50, generations=50, dataset1=1):
 	plt.legend(('total fitness*0.01','mean fitness','best member'), loc = 'lower right')
 	#set graph limits
 	#axgraph.set_xlim(0,i)
-	axgraph.set_ylim(0,gene_length+1)
+	axgraph.set_ylim(0,70)
 	# Produce output
 	#plt.savefig('graphs.png', dpi=150)
-	#plt.show()
+	plt.show()
 	return i+1
 
 def roulette_wheel_selection(pool_gene, parents_number, highest_fitness_member):
