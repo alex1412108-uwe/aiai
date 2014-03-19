@@ -20,7 +20,7 @@ def main():
 	random.shuffle(data)
 	dataset1 = data[:16]
 	dataset2 = data[17:]
-	genetic_algorithm(len(data), len(data[0][0]), 500, dataset1)
+	genetic_algorithm(30, len(data[0][0]), 100, dataset1)
 
 
 def datareader():
@@ -74,8 +74,8 @@ def genetic_algorithm(pool_size=0, gene_length=0, generations=0, dataset1=0):
 	#pool size must be even
 	parents_number = pool_size #must be even
 	#tournament_size = 15
-	mutation_rate = .02 #percentage as a decimal
-	crossover_rate = .9
+	mutation_rate = .05 #percentage as a decimal
+	crossover_rate = .5
 
 	pool_gene = initialize_rule_set(pool_size, gene_length)
 	#pp.pprint(pool_gene)
@@ -95,7 +95,7 @@ def genetic_algorithm(pool_size=0, gene_length=0, generations=0, dataset1=0):
 	optimal_found = False
 	for i in range(0,generations):
 
-		#pp.pprint(pool_gene)
+		pp.pprint(pool_gene)
 		parents_gene = roulette_wheel_selection(pool_gene, parents_number, highest_fitness_member)
 		#pp.pprint(parents_gene)
 		#parents_gene = tournament_selection(pool_gene, parents_number, tournament_size, highest_fitness_member)
@@ -141,10 +141,10 @@ def genetic_algorithm(pool_size=0, gene_length=0, generations=0, dataset1=0):
 	#label graphs
 	axgraph.set_xlabel(r"generation", fontsize = 12)
 	axgraph.set_ylabel(r"fitness", fontsize = 12)
-	plt.legend(('total fitness*0.01','mean fitness','best member'), loc = 'lower right')
+	plt.legend(('total fitness*0.01','mean fitness','best member'), loc = 'upper left')
 	#set graph limits
 	#axgraph.set_xlim(0,i)
-	axgraph.set_ylim(0,70)
+	axgraph.set_ylim(0,10)
 	# Produce output
 	#plt.savefig('graphs.png', dpi=150)
 	plt.show()
