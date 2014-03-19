@@ -18,8 +18,8 @@ def main():
 	pp = pprint.PrettyPrinter(indent = 2)
 	data = list(datareader())
 	random.shuffle(data)
-	dataset1 = data[:16]
-	dataset2 = data[17:]
+	dataset1 = data[:len(data)/2]
+	dataset2 = data[(len(data)/2)+1:]
 	genetic_algorithm(30, len(data[0][0]), 100, dataset1)
 
 
@@ -31,7 +31,7 @@ def datareader():
 		#for row in datafromfile:
 			#print row
 
-def initialize_rule_set(rule_set_size=16, rule_length=5):
+def initialize_rule_set(rule_set_size=0, rule_length=0):
 	rule_set = {}
 	for member in range(0,rule_set_size):
 		value_rule = list(range(rule_length))
@@ -40,7 +40,7 @@ def initialize_rule_set(rule_set_size=16, rule_length=5):
 			value_rule[rule] = random.choice(["0","1","[01]"])
 		value_fitness = 0
 		value_member["gene"] = value_rule
-		value_member["result"] = 1#random.choice([0,1])
+		value_member["result"] = random.choice([0,1])
 		value_member["fitness"] = value_fitness
 		rule_set[member] = value_member
 	return rule_set
@@ -50,17 +50,19 @@ def fitness_test(rule_set, dataset):
 	pp = pprint.PrettyPrinter(indent = 1)
 	for key, member in rule_set.items():
 		fitness = 1
+		accuracy=0
 		rule_string = ''.join(member["gene"])
 		for data in dataset:
 			# if member["result"] == int(data[1]):
 			# 	fitness += 0
 			if re.match(rule_string, data[0]):
 				if int(data[1]) == 0:
-					fitness -= 1
+					accuracy -= 1
 				elif int(data[1]) == 1:
-					fitness += 1
+					accuracy += 1
 				else:
 					print "error"
+		fitness+=accuracy
 		rule_set[key]["fitness"] = fitness
 	return rule_set
 
@@ -121,13 +123,13 @@ def genetic_algorithm(pool_size=0, gene_length=0, generations=0, dataset1=0):
 		graph_points(i+1,highest_fitness_member[0]["fitness"],'b',axgraph)
 
 
-		if highest_fitness_member[0]["fitness"] == gene_length:
-			#print("")
-			print("generations taken="+str(i+1))
-			optimal_found=True
-			break
-	if optimal_found == False:
-		print('no optimal found')
+	# 	if highest_fitness_member[0]["fitness"] == gene_length:
+	# 		#print("")
+	# 		print("generations taken="+str(i+1))
+	# 		optimal_found=True
+	# 		break
+	# if optimal_found == False:
+	# 	print('no optimal found')
 	#print("highest fitness member=" + str(highest_fitness_member[0]["fitness"]))
 	#print("fitness goal=" + str(gene_length))
 
@@ -199,7 +201,12 @@ def single_point_crossover(shuffled_gene, crossover_rate):
 	children_gene = dict(shuffled_gene)
 	gene_length=len(shuffled_gene[0]["gene"])
 
-	for member in range(0, len(shuffled_gene),2):
+	if len(shuffled_gene) % 2 == 0:
+		crossover_range= len(shuffled_gene)
+	else:
+		crossover_range = len(shuffled_gene)-1
+
+	for member in range(0, crossover_range,2):
 		if random.random() < crossover_rate: #random.random returns a float between 0 and 1
 			gene1 = shuffled_gene[member]["gene"]
 			gene2 = shuffled_gene[member + 1]["gene"]
